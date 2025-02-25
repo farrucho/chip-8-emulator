@@ -1,14 +1,12 @@
-#include <chip8.h>
 #include <cstdint>
-
+#include <fstream>
+#include "chip8.h"
+#include <iostream>
 
 void Chip8::initialize(){
 
 
-
-
-
-    // Load sprites to memory
+    // Load fontset sprites to memory
     /*
     Sprite "0"	Binary	    Hex
         ****    11110000    0xF0
@@ -49,3 +47,37 @@ void Chip8::initialize(){
     
 
 }
+
+void Chip8::loadRom(char const* filename){
+    // load ROM begining at 0x200
+    const unsigned int START_ADDRESS = 0x200;
+
+    
+    std::ifstream romFile(filename, std::ios::binary);
+    // when opening a file it creates a file pointer on the begining to dictate where to read or write
+
+    if(romFile.is_open()){
+        romFile.seekg(0, std::ios::end); // move file pointer to the end
+        std::streampos size = romFile.tellg(); // get position of file pointer in bytes
+        romFile.seekg(0, std::ios::beg); // move file pointer to begining so the work can start in the natural start of the file
+    
+        // size is not a int/long type so it must be forced convertible with new char[size] int this way the array is created
+        char* buffer = new char[size];
+        std::cout << size;
+
+        romFile.read(buffer, size); // reads the number size bytes and stores all of them in the buffer
+        // now all bytes are in the buffer and we can acess it
+
+        // we are redding from 0 to 4096 to bytes so we need to have at least a variable with 
+        // 4096 values or 12 bits or 2 bytes, long or int will serve
+        for(int i = 0; i < size;i++){ 
+            memory_map[START_ADDRESS + i] = buffer[i];
+        }
+
+        delete[] buffer;
+        // delete[] instead of only delete so it deletes properly the array
+        romFile.close();
+    }
+
+}
+

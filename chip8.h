@@ -10,7 +10,7 @@ class Chip8 {
     */
 
     private:
-        uint8_t memory_map[4096]; 
+        //uint8_t memory_map[4096]; 
         
         uint8_t V[16];
         // Vx registers, where x is a hexadecimal digit (0 through F)
@@ -31,12 +31,16 @@ class Chip8 {
         // Used to store the address that the interpreter shoud return to when finished with a subroutine. Chip-8 allows for up to 16 levels of nested subroutines.
 
     public:
+        uint8_t memory_map[4096]; //TEMPORARIO
+
         uint8_t keyboard[16];
 
         uint8_t display[64 * 32];
         // 64 pixels wide and 32 pixels high, each pixel is either on or off, so only two colors can be represented.
 
         void initialize();
+        void loadRom(char const* filename);
+
 };
 
 
