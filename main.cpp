@@ -11,7 +11,7 @@ int main()
     chip8.initialize();
     chip8.loadRom(ROM_FILENAME);
 
-    
+    // IMPLEMENTAR TABLES DESCOBRIR COMO FUNCIONAM
 
 
 

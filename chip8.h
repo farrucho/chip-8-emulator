@@ -13,6 +13,15 @@ class Chip8 {
     */
     // NAO SEI SE TA CERTO FUNCAO SHR_Vx_Vy()
 
+    public:
+        uint8_t keyboard[16];
+
+        // 64 pixels wide and 32 pixels high, each pixel is either on or off, so only two colors can be represented.
+        uint8_t display[64 * 32];
+
+        void initialize();
+        void loadRom(char const* filename);
+
 
     private:
         // All instructions are 2 bytes long and are stored most-significant-byte first. 
@@ -89,14 +98,36 @@ class Chip8 {
         void LD_Vx_I();
         void Cycle();
 
-    public:
-        uint8_t keyboard[16];
+        // In order to decode the opcode an array of function pointers were used.
+        // To achieve minimum of space taken by this array the following 4 types were found:
+        // -> The first digit only has one unique instruction:
+                // $1nnn $2nnn $3xkk $4xkk $5xy0 $6xkk $7xkk $9xy0 $Annn $Bnnn $Cxkk $Dxyn
+        // -> The first digit repeats but the last digit is unique:
+                // $8xy0 $8xy1 $8xy2 $8xy3 $8xy4 $8xy5 $8xy6 $8xy7 $8xyE
+        // -> The first three digits are $00E but the fourth digit is unique: 
+                // $00E0 $00EE
+        // -> The first digit repeats but the last two digits are unique: 
+                // $ExA1 $Ex9E $Fx07 $Fx0A $Fx15 $Fx18 $Fx1E $Fx29 $Fx33 $Fx55 $Fx65
 
-        // 64 pixels wide and 32 pixels high, each pixel is either on or off, so only two colors can be represented.
-        uint8_t display[64 * 32];
 
-        void initialize();
-        void loadRom(char const* filename);
+        // the tables have + 1 because the XX insctruction is stored in XX and not in XX-1 (Example 00EE is stored on index E so the size needs to be E+1) It is a little inneficiente (in memory storage) but a good approach instead of using the old switch statement
+
+        // this table responsible for first digit
+        void(Chip8::*table[0xD  + 1])(); // we need to say it takes a function pointer belonging to the class Chip8
+
+        // in the not unique instruction case:
+        // main table -> sub table -> sub_table_function() -> non_unique_instruction()
+        void Table8();
+        void(Chip8::*table8[0xE + 1])();
+
+        void(Chip8::*table0[0xE + 1])();
+        void Table0();
+
+        void(Chip8::*tableE[0x9E + 1])();
+        void TableE();
+
+        void(Chip8::*tableF[0x65 + 1])();
+        void TableF();
 };
 
 

@@ -54,7 +54,72 @@ void Chip8::initialize(){
     }
 
     
+    // define the tables and subtables for the opcode
 
+    table[0x1] = &Chip8::JP_addr;
+    table[0x2] = &Chip8::CALL_addr;
+    table[0x3] = &Chip8::SNE_Vx_byte;
+    table[0x4] = &Chip8::SE_Vx_byte;
+    table[0x5] = &Chip8::SE_Vx_Vy;
+    table[0x6] = &Chip8::LD_Vx_byte;
+    table[0x7] = &Chip8::ADD_Vx_byte;
+    table[0x9] = &Chip8::SNE_Vx_Vy;
+    table[0xA] = &Chip8::LD_I_addr;
+    table[0xB] = &Chip8::JP_V0_addr;
+    table[0xC] = &Chip8::RND_Vx_byte;
+    table[0xD] = &Chip8::DRW_Vx_Vy_nibble;
+
+
+    table8[0x0] = &Chip8::LD_Vx_Vy;
+    table8[0x1] = &Chip8::OR_Vx_Vy;
+    table8[0x2] = &Chip8::AND_Vx_Vy;
+    table8[0x3] = &Chip8::XOR_Vx_Vy;
+    table8[0x4] = &Chip8::ADD_Vx_Vy;
+    table8[0x5] = &Chip8::SUB_Vx_Vy;
+    table8[0x6] = &Chip8::SHR_Vx_Vy;
+    table8[0x7] = &Chip8::SUBN_Vx_Vy;
+    table8[0xE] = &Chip8::SHL_Vx_Vy;
+
+    table0[0x0] = &Chip8::CLS;
+    table0[0xE] = &Chip8::RET;
+
+    tableE[0xA1] = &Chip8::SKNP_Vx;
+    tableE[0x9E] = &Chip8::SKP_Vx;
+    
+    tableF[0x07] = &Chip8::LD_Vx_DT;
+    tableF[0x0A] = &Chip8::LD_Vx_K;
+    tableF[0x15] = &Chip8::LD_DT_Vx;
+    tableF[0x18] = &Chip8::LD_ST_Vx;
+    tableF[0x1E] = &Chip8::ADD_I_Vx;
+    tableF[0x29] = &Chip8::LD_F_Vx;
+    tableF[0x33] = &Chip8::LD_B_Vx;
+    tableF[0x55] = &Chip8::LD_I_Vx;
+    tableF[0x65] = &Chip8::LD_Vx_I;
+
+}
+
+void Chip8::Table8(){
+    // choice based on least significant opcode digit
+    // return adequated pointer
+    ((*this).*(table8[opcode & 0x000F]))();
+}
+
+void Chip8::Table0(){
+    // choice based on least significant opcode digit
+    // return adequated pointer
+    ((*this).*(table8[opcode & 0x000F]))();
+}
+
+void Chip8::TableE(){
+    // choice based on least significant opcode digit
+    // return adequated pointer
+    ((*this).*(table8[opcode & 0x00FF]))();
+}
+
+void Chip8::TableF(){
+    // choice based on least significant opcode digit
+    // return adequated pointer
+    ((*this).*(table8[opcode & 0x00FF]))();
 }
 
 void Chip8::loadRom(char const* filename){    
@@ -92,11 +157,13 @@ void Chip8::SYS_addr(){
     // This routine would be written in the machine language of the computer’s CPU; on the original COSMAC VIP and the ETI-660, this was 1802 machine code, and on the DREAM 6800, M6800 code. Unless you’re making an emulator for either of those computers, skip this one.
 }
 
+
 void Chip8::CLS(){
     // 00E0
     // Clear the display.
     std::fill(std::begin(display), std::end(display), 0);
 }
+
 
 void Chip8::RET(){
     // opcode == 00EE
@@ -107,6 +174,7 @@ void Chip8::RET(){
     sp--;
     pc = stack[sp];
 }
+
 
 void Chip8::JP_addr(){
     // 1nnn
@@ -512,7 +580,7 @@ void Chip8::LD_F_Vx(){
 }
 
 void Chip8::LD_B_Vx(){
-    // Fx29
+    // Fx33
     // Store BCD representation of Vx in memory locations I, I+1, and I+2.
     // The interpreter takes the decimal value of Vx, and places the hundreds digit in memory at location in I, the tens digit at location I+1, and the ones digit at location I+2.
 
