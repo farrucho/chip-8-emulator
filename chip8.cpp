@@ -2,6 +2,7 @@
 #include <fstream>
 #include "chip8.h"
 #include <random>
+#include <iostream>
 
 const unsigned int FONTSET_SIZE = 16*5;
 const unsigned int FONTSET_START_ADDRESS = 0x50;
@@ -56,6 +57,7 @@ void Chip8::initialize(){
     
     // define the tables and subtables for the opcode
 
+    table[0x0] = &Chip8::Table0;
     table[0x1] = &Chip8::JP_addr;
     table[0x2] = &Chip8::CALL_addr;
     table[0x3] = &Chip8::SNE_Vx_byte;
@@ -63,11 +65,14 @@ void Chip8::initialize(){
     table[0x5] = &Chip8::SE_Vx_Vy;
     table[0x6] = &Chip8::LD_Vx_byte;
     table[0x7] = &Chip8::ADD_Vx_byte;
+    table[0x8] = &Chip8::Table8;
     table[0x9] = &Chip8::SNE_Vx_Vy;
     table[0xA] = &Chip8::LD_I_addr;
     table[0xB] = &Chip8::JP_V0_addr;
     table[0xC] = &Chip8::RND_Vx_byte;
     table[0xD] = &Chip8::DRW_Vx_Vy_nibble;
+    table[0xE] = &Chip8::TableE;
+    table[0xF] = &Chip8::TableF;
 
 
     table8[0x0] = &Chip8::LD_Vx_Vy;
@@ -151,16 +156,17 @@ void Chip8::loadRom(char const* filename){
 }
 
 
+
 void Chip8::SYS_addr(){
     // 0nnn
     // Jump to a machine code routine at nnn.
     // This routine would be written in the machine language of the computer’s CPU; on the original COSMAC VIP and the ETI-660, this was 1802 machine code, and on the DREAM 6800, M6800 code. Unless you’re making an emulator for either of those computers, skip this one.
 }
 
-
 void Chip8::CLS(){
     // 00E0
     // Clear the display.
+    // memset(display, 0, sizeof(display));
     std::fill(std::begin(display), std::end(display), 0);
 }
 
@@ -250,9 +256,9 @@ void Chip8::LD_Vx_byte(){
     // The interpreter puts the value kk into register Vx.
 
     uint8_t x = (opcode & 0x0F00u) >> 8u;
-    uint8_t byte = opcode & 0x00FFu;
+    uint8_t kk = opcode & 0x00FFu;
 
-    V[x] = byte;
+    V[x] = kk;
 
 }
 void Chip8::ADD_Vx_byte(){
@@ -261,9 +267,9 @@ void Chip8::ADD_Vx_byte(){
     // Adds the value kk to the value of register Vx, then stores the result in Vx. 
 
     uint8_t x = (opcode & 0x0F00u) >> 8u;
-    uint8_t byte = opcode & 0x00FFu;
+    uint8_t kk = opcode & 0x00FFu;
 
-    V[x] = byte + V[x];
+    V[x] = kk + V[x];
 }
 
 void Chip8::LD_Vx_Vy(){
@@ -461,11 +467,11 @@ void Chip8::DRW_Vx_Vy_nibble(){
 
     for(int i = 0; i < n; i++){
         uint8_t spritebyte = memory_map[I + i];
-        for(int col = 0; i < 8; i++){ // every byte row has 8 collumn bits
+        for(int col = 0; col < 8; col++){ // every byte row has 8 collumn bits
             // get current bit to write to display (starting from left of course)
             uint8_t spritepixel = spritebyte & (0x80u >> col);
 
-            uint8_t * screenPixel = &display[(xPos+i)*64 + (yPos + col)];
+            uint8_t * screenPixel = &display[(yPos+i)*64 + (xPos + col)];
             
             // A B XOR
             // 0 0 0
@@ -629,6 +635,8 @@ void Chip8::Cycle(){
 
 
     // execute instruction here
+    std::cout << ((opcode & 0XF000u) >> 12u) << std::endl;
+    ((*this).*(table[(opcode & 0XF000u) >> 12u]))();
 
     
     

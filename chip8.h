@@ -17,16 +17,17 @@ class Chip8 {
         uint8_t keyboard[16];
 
         // 64 pixels wide and 32 pixels high, each pixel is either on or off, so only two colors can be represented.
-        uint8_t display[64 * 32];
+        uint8_t display[64*32];
 
         void initialize();
-        void loadRom(char const* filename);
-
+        void loadRom(char const *filename);
+        void Cycle();
+        uint8_t memory_map[4096]; 
 
     private:
         // All instructions are 2 bytes long and are stored most-significant-byte first. 
         // In memory, the first byte of each instruction should be located at an even addresses. If a program includes sprite data, it should be padded so any instructions following it will be properly situated in RAM.
-        uint8_t memory_map[4096]; 
+        // uint8_t memory_map[4096]; 
         
         // Vx registers, where x is a hexadecimal digit (0 through F)
         // The VF register should not be used by any program, as it is used as a flag by some instructions
@@ -96,7 +97,6 @@ class Chip8 {
         void LD_B_Vx();
         void LD_I_Vx();
         void LD_Vx_I();
-        void Cycle();
 
         // In order to decode the opcode an array of function pointers were used.
         // To achieve minimum of space taken by this array the following 4 types were found:
