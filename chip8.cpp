@@ -60,8 +60,8 @@ void Chip8::initialize(){
     table[0x0] = &Chip8::Table0;
     table[0x1] = &Chip8::JP_addr;
     table[0x2] = &Chip8::CALL_addr;
-    table[0x3] = &Chip8::SNE_Vx_byte;
-    table[0x4] = &Chip8::SE_Vx_byte;
+    table[0x3] = &Chip8::SE_Vx_byte;
+    table[0x4] = &Chip8::SNE_Vx_byte;
     table[0x5] = &Chip8::SE_Vx_Vy;
     table[0x6] = &Chip8::LD_Vx_byte;
     table[0x7] = &Chip8::ADD_Vx_byte;
@@ -88,8 +88,8 @@ void Chip8::initialize(){
     table0[0x0] = &Chip8::CLS;
     table0[0xE] = &Chip8::RET;
 
-    tableE[0xA1] = &Chip8::SKNP_Vx;
     tableE[0x9E] = &Chip8::SKP_Vx;
+    tableE[0xA1] = &Chip8::SKNP_Vx;
     
     tableF[0x07] = &Chip8::LD_Vx_DT;
     tableF[0x0A] = &Chip8::LD_Vx_K;
@@ -103,6 +103,34 @@ void Chip8::initialize(){
 
 }
 
+
+void Chip8::Cycle(){
+    // get opcode
+    // Remember: In memory, the first byte of each instruction should be located at an even addresses.
+    opcode = memory_map[pc] << 8u | memory_map[pc+1]; // with this we get the 4 bytes opcode
+
+    // increment instruction to execute
+    pc += 2;
+
+
+    // execute instruction here
+    // std::cout << "Instruction: " << ((opcode & 0XF000u) >> 12u) << std::endl;
+    ((*this).*(table[(opcode & 0XF000u) >> 12u]))();
+
+    
+    
+    // The delay timer is active whenever the delay timer register (DT) is non-zero. 
+    //This timer does nothing more than subtract 1 from the value of DT at a rate of 60Hz. When DT reaches 0, it deactivates.
+    if(delay_timer > 0){
+        delay_timer -= 1;
+    }
+    
+    // The sound timer is active whenever the sound timer register (ST) is non-zero. This timer also decrements at a rate of 60Hz, however, as long as ST's value is greater than zero, the Chip-8 buzzer will sound. When ST reaches zero, the sound timer deactivates.
+    if(sound_timer > 0){
+        delay_timer -= 1;
+    }
+}
+
 void Chip8::Table8(){
     // choice based on least significant opcode digit
     // return adequated pointer
@@ -112,19 +140,19 @@ void Chip8::Table8(){
 void Chip8::Table0(){
     // choice based on least significant opcode digit
     // return adequated pointer
-    ((*this).*(table8[opcode & 0x000F]))();
+    ((*this).*(table0[opcode & 0x000F]))();
 }
 
 void Chip8::TableE(){
     // choice based on least significant opcode digit
     // return adequated pointer
-    ((*this).*(table8[opcode & 0x00FF]))();
+    ((*this).*(tableE[opcode & 0x00FF]))();
 }
 
 void Chip8::TableF(){
     // choice based on least significant opcode digit
     // return adequated pointer
-    ((*this).*(table8[opcode & 0x00FF]))();
+    ((*this).*(tableF[opcode & 0x00FF]))();
 }
 
 void Chip8::loadRom(char const* filename){    
@@ -219,7 +247,7 @@ void Chip8::SE_Vx_byte(){
     if(V[x] == kk){
         pc += 2; // skip next instruction and put counter to next instruction address 
     }
-
+    std::cout << unsigned(V[x]) << "  " << unsigned(kk) << std::endl;
 }
 
 
@@ -460,35 +488,66 @@ void Chip8::DRW_Vx_Vy_nibble(){
     uint8_t y = (opcode & 0x00F0u) >> 4u;
     uint8_t n = (opcode & 0x000Fu); // rows
 
-    uint8_t xPos = V[x] % 64;
-    uint8_t yPos = V[y] % 32;
+    // uint8_t xPos = V[x] % 64;
+    // uint8_t yPos = V[y] % 32;
+    // std::cout << "(" << unsigned(V[x]) << ", " << unsigned(V[y]) << ")\n";
 
     V[0xFu] = 0;
 
-    for(int i = 0; i < n; i++){
-        uint8_t spritebyte = memory_map[I + i];
-        for(int col = 0; col < 8; col++){ // every byte row has 8 collumn bits
-            // get current bit to write to display (starting from left of course)
-            uint8_t spritepixel = spritebyte & (0x80u >> col);
+    // for(int ki = 0; ki < 32; ki++){
+    //     for(int kj = 0; kj < 64; kj++){
+    //         std::cout << unsigned(ki*64 + kj) << " ";
+    //     }
+    //     std::cout << "\n";
+    // }
 
-            uint8_t * screenPixel = &display[(yPos+i)*64 + (xPos + col)];
+    for(int spriteRow = 0; spriteRow < n; spriteRow++){
+        uint8_t spritebyte = memory_map[I + spriteRow];
+        // std::cout << "spritebyte: " << unsigned(spritebyte) << std::endl;
+
+        for(int spriteCol = 0; spriteCol < 8; spriteCol++){ // every byte row has 8 collumn bits
+            // get current bit to write to display (starting from left of course)
+            uint8_t spritepixel = (spritebyte & (0x80u >> spriteCol)) >> (7-spriteCol);
+            // uint16_t pixelPostion = (V[x]+i)*64 + (V[y] + col);
+            uint16_t pixelPostion = ((V[y]%32) +spriteRow)*64 + ((V[x]%64) + spriteCol);
             
-            // A B XOR
+            uint8_t* screenPixel = &display[pixelPostion];
+            
+            // std::cout << "----------------------------" << std::endl;
+            // for(int ki = 0; ki < 32; ki++){
+                //     for(int kj = 0; kj < 64; kj++){
+                    //         std::cout << unsigned(ki*64 + kj) << " ";
+                    //     }
+                    //     std::cout << "\n";
+                    // }
+                    // std::cout << "----------------------------" << std::endl;
+                    
+            // *screenPixel ^= spritepixel;
+                    
+            // std::cout << unsigned(spritepixel) << "  " << unsigned(pixelPostion) << "  " << unsigned(*screenPixel) << std::endl;
+            
+            // if(unsigned(pixelPostion) > 2048){
+            //     throw std::invalid_argument( "pixel positon too big" );
+            // }
+
+
+            // SpritePixel ScreenPixel XOR
             // 0 0 0
             // 0 1 1
             // 1 0 1  <-
             // 1 1 0  <-
             // -> so atualiza caso spritepixel == 1
-            if(spritepixel){
-                if(screenPixel){
+            if(spritepixel != 0){
+                if(*screenPixel == 1){
                     V[0xFu] = 1;
                 }
-                *screenPixel = ~*screenPixel;
+                
+                // *screenPixel = ~(spritepixel);
             }
+            *screenPixel ^= spritepixel;
         }
-    }
-    
-    
+        // std::cout << std::endl;
+    } 
 }
 
 void Chip8::SKP_Vx(){
@@ -623,33 +682,4 @@ void Chip8::LD_Vx_I(){
     for(int i = 0; i < x; i++){
         V[i] = memory_map[I + i];
     }
-}
-
-void Chip8::Cycle(){
-    // get opcode
-    // Remember: In memory, the first byte of each instruction should be located at an even addresses.
-    opcode = memory_map[pc] << 8u | memory_map[pc+1]; // with this we get the 4 bytes opcode
-
-    // increment instruction to execute
-    pc += 2;
-
-
-    // execute instruction here
-    std::cout << ((opcode & 0XF000u) >> 12u) << std::endl;
-    ((*this).*(table[(opcode & 0XF000u) >> 12u]))();
-
-    
-    
-    // The delay timer is active whenever the delay timer register (DT) is non-zero. 
-    //This timer does nothing more than subtract 1 from the value of DT at a rate of 60Hz. When DT reaches 0, it deactivates.
-    if(delay_timer > 0){
-        delay_timer -= 1;
-    }
-    
-    // The sound timer is active whenever the sound timer register (ST) is non-zero. This timer also decrements at a rate of 60Hz, however, as long as ST's value is greater than zero, the Chip-8 buzzer will sound. When ST reaches zero, the sound timer deactivates.
-    if(sound_timer > 0){
-        delay_timer -= 1;
-    }
-
-
 }

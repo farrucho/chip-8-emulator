@@ -11,18 +11,17 @@ class Chip8 {
     https://github.com/kripod/chip8-roms
     https://github.com/Timendus/chip8-test-suite
     */
-    // NAO SEI SE TA CERTO FUNCAO SHR_Vx_Vy()
 
     public:
         uint8_t keyboard[16];
 
         // 64 pixels wide and 32 pixels high, each pixel is either on or off, so only two colors can be represented.
-        uint8_t display[64*32];
+        uint8_t display[64*32] = {};
 
         void initialize();
         void loadRom(char const *filename);
         void Cycle();
-        uint8_t memory_map[4096]; 
+        uint8_t memory_map[4096] = {}; 
 
     private:
         // All instructions are 2 bytes long and are stored most-significant-byte first. 
@@ -117,8 +116,8 @@ class Chip8 {
 
         // in the not unique instruction case:
         // main table -> sub table -> sub_table_function() -> non_unique_instruction()
-        void Table8();
         void(Chip8::*table8[0xE + 1])();
+        void Table8();
 
         void(Chip8::*table0[0xE + 1])();
         void Table0();

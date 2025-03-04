@@ -23,22 +23,23 @@ void Screen::initialize(){
 }
 
 void Screen::draw(uint8_t display[]){
-    
     int spriteW = SCREEN_WIDTH/64;
     int spriteH = SCREEN_HEIGHT/32;
     
-    for(int r=0; r < 64; r++){
-        for(int c=0; c < 32; c++){
-            SDL_SetRenderDrawColor(renderer, display[r*c], display[r*c], display[r*c], 0);
+    for(int x=0; x < 64; x++){
+        for(int y=0; y < 32; y++){
+            SDL_SetRenderDrawColor(renderer, display[y*64+x]*255, display[y*64+x]*255, display[y*64+x]*255, 0);
             // std::cout << display[r*c] << std::endl;
             // if(display[r*c] == 0x1u){
             //     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 0);
             // }else{
             //     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
             // }
-            for(int i=0; i < spriteW; i++){
-                for(int j=0; j < spriteH; j++){
-                    SDL_RenderDrawPoint(renderer, r*spriteW + i, c*spriteH + j);
+            // SDL_SetRenderDrawColor(renderer, 255, 255, 255, 0);
+            // SDL_RenderDrawPoint(renderer,x*spriteW, y*spriteH);
+            for(int xoff=0; xoff < spriteW; xoff++){
+                for(int yoff=0; yoff < spriteH; yoff++){
+                    SDL_RenderDrawPoint(renderer,x*spriteW + xoff, y*spriteH + yoff);
                 }
             }
         }
