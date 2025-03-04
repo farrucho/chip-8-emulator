@@ -20,10 +20,10 @@ int main(int argc, char* args[])
     // for(int r=0; r < 500; r++){
     //     std::cout << chip8.display[0x0u+r];
     // }
-    Screen screen(640,320);
+    Screen screen(640*2,320*2);
     screen.initialize();
-    screen.draw(chip8.display);
-
+    // screen.draw(chip8.display);
+    // screen.drawDebugger();
 
     auto lastCycleTime = std::chrono::high_resolution_clock::now();
 
@@ -31,12 +31,14 @@ int main(int argc, char* args[])
     while(cycles < 300){
         auto currentTime = std::chrono::system_clock::now();
         float difference = std::chrono::duration<float, std::chrono::milliseconds::period>(currentTime - lastCycleTime).count(); //count() return em segundos
-
-
-        if(difference > 5){
+        
+        
+        if(difference > 1){
             lastCycleTime = currentTime;
             chip8.Cycle();
+            screen.drawDebugger(chip8);
             screen.draw(chip8.display);
+            screen.render();
             cycles++;
             // for(int coll=0; coll < 32; coll++){
             //     for(int rr=0; rr < 64; rr++){

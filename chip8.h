@@ -23,6 +23,9 @@ class Chip8 {
         void Cycle();
         uint8_t memory_map[4096] = {}; 
 
+        uint16_t getOpcode();
+
+
     private:
         // All instructions are 2 bytes long and are stored most-significant-byte first. 
         // In memory, the first byte of each instruction should be located at an even addresses. If a program includes sprite data, it should be padded so any instructions following it will be properly situated in RAM.
@@ -55,12 +58,15 @@ class Chip8 {
         // opcode (operation code) is an enumerated value that specificies the operation to be performed
         uint16_t opcode;
 
+
+
         // nnn or addr -> A 12-bit value, the lowest 12 bits of the instruction
         // n or nibble -> A 4-bit value, the lowest 4 bits of the instruction
         // x -> A 4-bit value, the lower 4 bits of the high byte of the instruction
         // y -> A 4-bit value, the upper 4 bits of the low byte of the instruction
         // kk or byte -> An 8-bit value, the lowest 8 bits of the instruction
 
+        
         void SYS_addr();
         void CLS();
         void RET();
@@ -96,6 +102,7 @@ class Chip8 {
         void LD_B_Vx();
         void LD_I_Vx();
         void LD_Vx_I();
+
 
         // In order to decode the opcode an array of function pointers were used.
         // To achieve minimum of space taken by this array the following 4 types were found:

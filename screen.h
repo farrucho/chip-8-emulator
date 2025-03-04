@@ -2,6 +2,7 @@
 #define SCREEN_H
 
 #include <SDL2/SDL.h>
+#include "chip8.h"
 
 class Screen {
     public:
@@ -18,7 +19,9 @@ class Screen {
     
     void initialize();
     void draw(uint8_t display[]);
-
+    void drawDebugger(Chip8);
+    void render();
+    
         
 };
 

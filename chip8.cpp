@@ -247,7 +247,7 @@ void Chip8::SE_Vx_byte(){
     if(V[x] == kk){
         pc += 2; // skip next instruction and put counter to next instruction address 
     }
-    std::cout << unsigned(V[x]) << "  " << unsigned(kk) << std::endl;
+    // std::cout << unsigned(V[x]) << "  " << unsigned(kk) << std::endl;
 }
 
 
@@ -682,4 +682,8 @@ void Chip8::LD_Vx_I(){
     for(int i = 0; i < x; i++){
         V[i] = memory_map[I + i];
     }
+}
+
+uint16_t Chip8::getOpcode(){
+    return (*this).opcode;
 }
