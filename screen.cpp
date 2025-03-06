@@ -41,29 +41,66 @@ void Screen::drawDebugger(Chip8 chip8){
     TTF_Font* font = TTF_OpenFont("./PressStart2P-Regular.ttf", spriteW*2);
     SDL_Color White = {123, 125, 201};
 
-    uint16_t opcode = chip8.getOpcode();
-    char opcodeText[4]; // 4 opcode chars
-    sprintf(opcodeText, "%04X", opcode); // Hexadecimal ABCD
-
+    
     // draw blue screen
     SDL_SetRenderDrawColor((*this).renderer, 1, 0, 185, 0);
     SDL_Rect fillRectRightTop = {xDisplay, 0, SCREEN_WIDTH - xDisplay, yDisplay}; 
     SDL_RenderFillRect((*this).renderer, &fillRectRightTop);
+    
+    // draw opcodes
+    for(int i = 0; i < 10; i++){
+        uint8_t* memory = chip8.memory_map;
+        uint16_t pc = chip8.getPc();
+        uint16_t currentOpcode = memory[pc + i*2] << 8u | memory[pc+i*2+1]; // displays next instructions
+        char opcodeBuffer[4] = {};
+        sprintf(opcodeBuffer, "%04X", currentOpcode); // Hexadecimal ABCD
+        // std::cout << opcodeBuffer << std::endl;
+        // char opcodeBuffer1[2] = {};
+        // char opcodeBuffer2[2] = {};
+        
+        // sprintf(opcodeBuffer1, "%2X", memory[pc+i*2] & 0xF0); // Hexadecimal ABCD
+        // sprintf(opcodeBuffer2, "%2X", memory[pc+i*2+1]& 0x0F); // Hexadecimal ABCD
+        // std::string opcodeText = "";
+        // opcodeText += opcodeBuffer1;
+        // opcodeText += opcodeBuffer2;
+        // std::cout << opcodeBuffer1 << std::endl;
+        // std::cout << opcodeBuffer2 << std::endl;
+
+        SDL_Surface* surfaceMessageOpcode = TTF_RenderText_Solid(font, opcodeBuffer, White);
+        SDL_Texture* MessageOpcode = SDL_CreateTextureFromSurface((*this).renderer, surfaceMessageOpcode);
+
+        SDL_Rect MessageOpcode_rect;
+        MessageOpcode_rect.x = xDisplay;
+        MessageOpcode_rect.y = i*yDisplay/10;
+        MessageOpcode_rect.w = surfaceMessageOpcode->w;
+        MessageOpcode_rect.h = surfaceMessageOpcode->h;
+    
+        SDL_RenderCopy((*this).renderer, MessageOpcode, NULL, &MessageOpcode_rect);
+    
+        SDL_FreeSurface(surfaceMessageOpcode);
+        SDL_DestroyTexture(MessageOpcode);
+    }
+
+    // uint16_t opcode = chip8.getOpcode();
+    // char opcodeText[4]; // 4 opcode chars
+    // sprintf(opcodeText, "%04X", opcode); // Hexadecimal ABCD
+    
+
+    // SDL_Surface* surfaceMessage = TTF_RenderText_Solid(font, opcodeText, White);
+    // SDL_Texture* Message = SDL_CreateTextureFromSurface((*this).renderer, surfaceMessage);
+
+    // SDL_Rect Message_rect;
+    // Message_rect.x = xDisplay;
+    // Message_rect.y = 0;
+    // Message_rect.w = surfaceMessage->w;
+    // Message_rect.h = surfaceMessage->h;
+
+    // SDL_RenderCopy((*this).renderer, Message, NULL, &Message_rect);
+
+    // SDL_FreeSurface(surfaceMessage);
+    // SDL_DestroyTexture(Message);
 
     
-    SDL_Surface* surfaceMessage = TTF_RenderText_Solid(font, opcodeText, White);
-    SDL_Texture* Message = SDL_CreateTextureFromSurface((*this).renderer, surfaceMessage);
-
-    SDL_Rect Message_rect;
-    Message_rect.x = xDisplay;
-    Message_rect.y = 0;
-    Message_rect.w = surfaceMessage->w;
-    Message_rect.h = surfaceMessage->h;
-
-    SDL_RenderCopy((*this).renderer, Message, NULL, &Message_rect);
-
-    SDL_FreeSurface(surfaceMessage);
-    SDL_DestroyTexture(Message);
 
 
     // draw V registers

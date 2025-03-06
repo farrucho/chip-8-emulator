@@ -107,15 +107,11 @@ void Chip8::Cycle(){
     // get opcode
     // Remember: In memory, the first byte of each instruction should be located at an even addresses.
     opcode = memory_map[pc] << 8u | memory_map[pc+1]; // with this we get the 4 bytes opcode
-
-    // increment instruction to execute
-    pc += 2;
-
-
+    
     // execute instruction here
     // std::cout << "Instruction: " << ((opcode & 0XF000u) >> 12u) << std::endl;
     ((*this).*(table[(opcode & 0XF000u) >> 12u]))();
-
+    
     
     
     // The delay timer is active whenever the delay timer register (DT) is non-zero. 
@@ -128,6 +124,9 @@ void Chip8::Cycle(){
     if(sound_timer > 0){
         delay_timer -= 1;
     }
+
+    // increment instruction to execute
+    pc += 2;
 }
 
 void Chip8::Table8(){
@@ -702,4 +701,8 @@ uint16_t Chip8::getOpcodeFunctionPtr(){
 
 uint8_t Chip8::getV(uint8_t Vindex){
     return V[Vindex];
+}
+
+uint16_t Chip8::getPc(){
+    return pc;
 }

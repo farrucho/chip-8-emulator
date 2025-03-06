@@ -26,6 +26,7 @@ class Chip8 {
         uint16_t getOpcode();
         uint16_t getOpcodeFunctionPtr();
         uint8_t getV(uint8_t Vindex);
+        uint16_t getPc();
 
     private:
         // All instructions are 2 bytes long and are stored most-significant-byte first. 

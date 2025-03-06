@@ -28,7 +28,7 @@ int main(int argc, char* args[])
     auto lastCycleTime = std::chrono::high_resolution_clock::now();
 
     int cycles = 0;
-    while(cycles < 200){
+    while(cycles < 500){
         auto currentTime = std::chrono::system_clock::now();
         float difference = std::chrono::duration<float, std::chrono::milliseconds::period>(currentTime - lastCycleTime).count(); //count() return em segundos
         
