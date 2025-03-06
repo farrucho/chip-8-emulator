@@ -56,7 +56,6 @@ void Chip8::initialize(){
 
     
     // define the tables and subtables for the opcode
-
     table[0x0] = &Chip8::Table0;
     table[0x1] = &Chip8::JP_addr;
     table[0x2] = &Chip8::CALL_addr;
@@ -154,6 +153,7 @@ void Chip8::TableF(){
     // return adequated pointer
     ((*this).*(tableF[opcode & 0x00FF]))();
 }
+
 
 void Chip8::loadRom(char const* filename){    
     std::ifstream romFile(filename, std::ios::binary);
@@ -686,4 +686,20 @@ void Chip8::LD_Vx_I(){
 
 uint16_t Chip8::getOpcode(){
     return (*this).opcode;
+}
+
+uint16_t Chip8::getOpcodeFunctionPtr(){
+    // ((*this).*(table[(opcode & 0XF000u) >> 12u]))();
+    // auto funcPtr =  table[(opcode & 0XF000u) >> 12u]();
+    // // printf("Function pointer address: %p\n", (void*)funcPtr);
+    // // std::cout << funcPtr << std::endl;
+    // // printf("%s", funcPtr);
+    // std::cout << opcode << std::endl;
+    // // std::cout << "Function pointer: " << (void*)funcPtr << std::endl;
+    // std::cout << "Function type info: " << typeid(funcPtr).name() << std::endl;
+    return 0;
+}
+
+uint8_t Chip8::getV(uint8_t Vindex){
+    return V[Vindex];
 }

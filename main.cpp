@@ -28,7 +28,7 @@ int main(int argc, char* args[])
     auto lastCycleTime = std::chrono::high_resolution_clock::now();
 
     int cycles = 0;
-    while(cycles < 300){
+    while(cycles < 200){
         auto currentTime = std::chrono::system_clock::now();
         float difference = std::chrono::duration<float, std::chrono::milliseconds::period>(currentTime - lastCycleTime).count(); //count() return em segundos
         
@@ -36,8 +36,8 @@ int main(int argc, char* args[])
         if(difference > 1){
             lastCycleTime = currentTime;
             chip8.Cycle();
-            screen.drawDebugger(chip8);
             screen.draw(chip8.display);
+            screen.drawDebugger(chip8);
             screen.render();
             cycles++;
             // for(int coll=0; coll < 32; coll++){
