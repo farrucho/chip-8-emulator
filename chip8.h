@@ -10,6 +10,7 @@ class Chip8 {
     https://tobiasvl.github.io/blog/write-a-chip-8-emulator/
     https://github.com/kripod/chip8-roms
     https://github.com/Timendus/chip8-test-suite
+    Emulator Development Discord Server
     */
 
     public:
@@ -30,7 +31,7 @@ class Chip8 {
         uint16_t getI();
         uint8_t getSp();
         uint16_t getStack(uint8_t Vindex);
-
+        
     private:
         // All instructions are 2 bytes long and are stored most-significant-byte first. 
         // In memory, the first byte of each instruction should be located at an even addresses. If a program includes sprite data, it should be padded so any instructions following it will be properly situated in RAM.

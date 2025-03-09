@@ -364,19 +364,19 @@ void Chip8::ADD_Vx_Vy(){
 void Chip8::SUB_Vx_Vy(){
     // 8xy5
     // Set Vx = Vx - Vy, set VF = NOT borrow.
-    // If Vx > Vy, then VF is set to 1, otherwise 0. Then Vy is subtracted from Vx, and the results stored in Vx.
+    // If Vx >= Vy, then VF is set to 1, otherwise 0. Then Vy is subtracted from Vx, and the results stored in Vx.
+    // cowgod's tech reference is wrong on here :)
 
     uint8_t x = (opcode & 0x0F00u) >> 8u;
     uint8_t y = (opcode & 0x00F0u) >> 4u;
     
-    if (V[x] > V[y]){
-        V[0xFu] = 1;
-    }
-    else{
-        V[0xFu] = 0;
+    uint8_t vF_temp_result = 0;
+    if (V[x] >= V[y]){
+        vF_temp_result = 0x1;
     }
 
-    V[x] = V[x] - V[y];    
+    V[x] = V[x] - V[y];
+    V[0xF] = vF_temp_result;
 }
 
 void Chip8::SHR_Vx_Vy(){
@@ -386,28 +386,29 @@ void Chip8::SHR_Vx_Vy(){
 
     uint8_t x = (opcode & 0x0F00u) >> 8u;
     
-    
-    V[0xFu] = (V[x] & 0x1u);
+    uint8_t vF_temp_result = V[x] & 0x1u;
     
     V[x] = V[x] >> 1;
+    V[0xFu] = vF_temp_result;
 }
 
 void Chip8::SUBN_Vx_Vy(){
     // 8xy7
     // Set Vx = Vy - Vx, set VF = NOT borrow.
-    // If Vy > Vx, then VF is set to 1, otherwise 0. Then Vx is subtracted from Vy, and the results stored in Vx.
+    // If Vy >= Vx, then VF is set to 1, otherwise 0. Then Vx is subtracted from Vy, and the results stored in Vx.
+    // cowgod's tech reference is wrong again on here
+    // watch out to only set the variables at the end
 
     uint8_t x = (opcode & 0x0F00u) >> 8u;
     uint8_t y = (opcode & 0x00F0u) >> 4u;
     
-    if (V[x] > V[y]){
-        V[0xFu] = 1;
-    }
-    else{
-        V[0xFu] = 0;
+    uint8_t vF_temp_result = 0;
+    if (V[y] >= V[x]){
+        vF_temp_result = 1;
     }
 
     V[x] = V[y] - V[x];
+    V[0xF] = vF_temp_result;
 }
 
 void Chip8::SHL_Vx_Vy(){
@@ -416,18 +417,11 @@ void Chip8::SHL_Vx_Vy(){
     // If the most-significant bit of Vx is 1, then VF is set to 1, otherwise to 0. Then Vx is multiplied by 2.
     
     uint8_t x = (opcode & 0x0F00u) >> 8u;
-    uint8_t y = (opcode & 0x00F0u) >> 4u;
     
-    V[0xFu] = (V[x] & 0x1u);
-
-    if (V[x] & 0x1u){
-        V[0xFu] = 1;
-    }
-    else{
-        V[0xFu] = 0;
-    }
-
+    uint8_t vF_temp_result = (V[x] & 0x80u) >> 7u;
+    
     V[x] = V[x] << 1;
+    V[0xFu] = vF_temp_result;
 }
 
 void Chip8::SNE_Vx_Vy(){
