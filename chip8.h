@@ -27,6 +27,9 @@ class Chip8 {
         uint16_t getOpcodeFunctionPtr();
         uint8_t getV(uint8_t Vindex);
         uint16_t getPc();
+        uint16_t getI();
+        uint8_t getSp();
+        uint16_t getStack(uint8_t Vindex);
 
     private:
         // All instructions are 2 bytes long and are stored most-significant-byte first. 
@@ -54,6 +57,7 @@ class Chip8 {
         // https://www.geeksforgeeks.org/subroutine-subroutine-nesting-and-stack-memory/
         // In a stack, the first data put will be the last to get out of a stack.
         uint16_t stack[16];
+        
         // The stack pointer (SP) can be 8-bit, it is used to point to the topmost level of the stack. It Always points to the next available (empty) position on the stack, not the last valid entry.
         uint8_t sp;
         
@@ -121,7 +125,7 @@ class Chip8 {
         // the tables have + 1 because the XX insctruction is stored in XX and not in XX-1 (Example 00EE is stored on index E so the size needs to be E+1) It is a little inneficiente (in memory storage) but a good approach instead of using the old switch statement
 
         // this table responsible for first digit
-        void(Chip8::*table[0xD  + 1])(); // we need to say it takes a function pointer belonging to the class Chip8
+        void(Chip8::*table[0xF  + 1])(); // we need to say it takes a function pointer belonging to the class Chip8
 
         // in the not unique instruction case:
         // main table -> sub table -> sub_table_function() -> non_unique_instruction()

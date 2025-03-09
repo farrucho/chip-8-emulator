@@ -108,7 +108,6 @@ void Screen::drawDebugger(Chip8 chip8){
     SDL_Rect fillRectRightBottom = {xDisplay, yDisplay, SCREEN_WIDTH - xDisplay, SCREEN_HEIGHT - yDisplay}; 
     SDL_RenderFillRect((*this).renderer, &fillRectRightBottom);
 
-
     std::string Vtext = "";
     
     char Vvalue[8];
@@ -118,7 +117,7 @@ void Screen::drawDebugger(Chip8 chip8){
         if(i < 10){
             Vtext += " ";
         }
-        Vtext += ": ";
+        Vtext += ":";
         sprintf(Vvalue, "%02X", chip8.getV(i)); // Hexadecimal ABCD
         Vtext += Vvalue;
         // Vtext += "\n";
@@ -135,6 +134,129 @@ void Screen::drawDebugger(Chip8 chip8){
         SDL_FreeSurface(surfaceMessageVregs);
         SDL_DestroyTexture(MessageVregs);
     }
+
+    // draw I
+    std::string Itext = "";
+    Itext += "I: ";
+    char Ivalue[8];
+    sprintf(Ivalue, "%04X", chip8.getI()); // Hexadecimal ABCD
+    Itext += Ivalue;
+    SDL_Surface* surfaceMessageI = TTF_RenderText_Solid(font, Itext.c_str(), White);
+    SDL_Texture* MessageI = SDL_CreateTextureFromSurface((*this).renderer, surfaceMessageI);
+
+        
+    SDL_Rect Message_rectI;
+    Message_rectI.x = xDisplay + 1*(SCREEN_WIDTH-xDisplay)/4;;
+    Message_rectI.y = yDisplay + 0*(SCREEN_HEIGHT-yDisplay)/16;
+    Message_rectI.w = surfaceMessageI->w;
+    Message_rectI.h = surfaceMessageI->h;
+        
+    SDL_RenderCopy((*this).renderer, MessageI, NULL, &Message_rectI);
+    SDL_FreeSurface(surfaceMessageI);
+    SDL_DestroyTexture(MessageI);
+
+    // draw PC
+    std::string PCtext = "";
+    PCtext += "PC:";
+    char PCvalue[8];
+    sprintf(PCvalue, "%04X", chip8.getPc()); // Hexadecimal ABCD
+    PCtext += PCvalue;
+    SDL_Surface* surfaceMessagePC = TTF_RenderText_Solid(font, PCtext.c_str(), White);
+    SDL_Texture* MessagePC = SDL_CreateTextureFromSurface((*this).renderer, surfaceMessagePC);
+
+        
+    SDL_Rect Message_rectPC;
+    Message_rectPC.x = xDisplay + 1*(SCREEN_WIDTH-xDisplay)/4;
+    Message_rectPC.y = yDisplay + 2*(SCREEN_HEIGHT-yDisplay)/16;
+    Message_rectPC.w = surfaceMessagePC->w;
+    Message_rectPC.h = surfaceMessagePC->h;
+        
+    SDL_RenderCopy((*this).renderer, MessagePC, NULL, &Message_rectPC);
+    SDL_FreeSurface(surfaceMessagePC);
+    SDL_DestroyTexture(MessagePC);
+
+    //draw sp
+    std::string SPtext = "";
+    SPtext += "SP:";
+    char SPvalue[8];
+    sprintf(SPvalue, "%02X", chip8.getSp()); // Hexadecimal ABCD
+    SPtext += SPvalue;
+    SDL_Surface* surfaceMessageSP = TTF_RenderText_Solid(font, SPtext.c_str(), White);
+    SDL_Texture* MessageSP = SDL_CreateTextureFromSurface((*this).renderer, surfaceMessageSP);
+
+        
+    SDL_Rect Message_rectSP;
+    Message_rectSP.x = xDisplay + 1*(SCREEN_WIDTH-xDisplay)/4;
+    Message_rectSP.y = yDisplay + 4*(SCREEN_HEIGHT-yDisplay)/16;
+    Message_rectSP.w = surfaceMessageSP->w;
+    Message_rectSP.h = surfaceMessageSP->h;
+        
+    SDL_RenderCopy((*this).renderer, MessageSP, NULL, &Message_rectSP);
+    SDL_FreeSurface(surfaceMessageSP);
+    SDL_DestroyTexture(MessageSP);
+
+    
+    // draw stack
+    std::string Stacktext = "";
+    
+    char Stackvalue[16];
+    for(int i=0; i < 16; i++){
+        Stacktext = "S";
+        Stacktext += std::to_string(i); 
+        if(i < 10){
+            Stacktext += " ";
+        }
+        Stacktext += ":";
+        sprintf(Stackvalue, "%04X", chip8.getStack(i)); // Hexadecimal ABCD
+        Stacktext += Stackvalue;
+        // Vtext += "\n";
+        SDL_Surface* surfaceMessageStack = TTF_RenderText_Solid(font, Stacktext.c_str(), White);
+        SDL_Texture* MessageStack = SDL_CreateTextureFromSurface((*this).renderer, surfaceMessageStack);
+        
+        SDL_Rect Message_rectStack;
+        Message_rectStack.x = xDisplay + 2*(SCREEN_WIDTH-xDisplay)/4;
+        Message_rectStack.y = yDisplay + i*(SCREEN_HEIGHT-yDisplay)/16;
+        Message_rectStack.w = surfaceMessageStack->w;
+        Message_rectStack.h = surfaceMessageStack->h;
+        
+        SDL_RenderCopy((*this).renderer, MessageStack, NULL, &Message_rectStack);
+        SDL_FreeSurface(surfaceMessageStack);
+        SDL_DestroyTexture(MessageStack);
+    }
+
+    // SDL_SetRenderDrawColor((*this).renderer, 1, 0, 165, 0);
+    // SDL_Rect fillRectRightBottom = {xDisplay, yDisplay, SCREEN_WIDTH - xDisplay, SCREEN_HEIGHT - yDisplay}; 
+    // SDL_RenderFillRect((*this).renderer, &fillRectRightBottom);
+
+
+    // std::string Vtext = "";
+    
+    // char Vvalue[8];
+    // for(int i=0; i < 16; i++){
+    //     Vtext = "V";
+    //     Vtext += std::to_string(i); 
+    //     if(i < 10){
+    //         Vtext += " ";
+    //     }
+    //     Vtext += ": ";
+    //     sprintf(Vvalue, "%02X", chip8.getV(i)); // Hexadecimal ABCD
+    //     Vtext += Vvalue;
+    //     // Vtext += "\n";
+    //     SDL_Surface* surfaceMessageVregs = TTF_RenderText_Solid(font, Vtext.c_str(), White);
+    //     SDL_Texture* MessageVregs = SDL_CreateTextureFromSurface((*this).renderer, surfaceMessageVregs);
+        
+    //     SDL_Rect Message_rectVregs;
+    //     Message_rectVregs.x = xDisplay;
+    //     Message_rectVregs.y = yDisplay + i*(SCREEN_HEIGHT-yDisplay)/16;
+    //     Message_rectVregs.w = surfaceMessageVregs->w;
+    //     Message_rectVregs.h = surfaceMessageVregs->h;
+        
+    //     SDL_RenderCopy((*this).renderer, MessageVregs, NULL, &Message_rectVregs);
+    //     SDL_FreeSurface(surfaceMessageVregs);
+    //     SDL_DestroyTexture(MessageVregs);
+    // }
+
+
     // Vtext.pop_back();
     // std::cout << "--" << Vtext << "--" << std::endl;
 

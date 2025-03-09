@@ -108,6 +108,9 @@ void Chip8::Cycle(){
     // Remember: In memory, the first byte of each instruction should be located at an even addresses.
     opcode = memory_map[pc] << 8u | memory_map[pc+1]; // with this we get the 4 bytes opcode
     
+    // increment instruction to execute
+    pc += 2;
+    
     // execute instruction here
     // std::cout << "Instruction: " << ((opcode & 0XF000u) >> 12u) << std::endl;
     ((*this).*(table[(opcode & 0XF000u) >> 12u]))();
@@ -124,9 +127,7 @@ void Chip8::Cycle(){
     if(sound_timer > 0){
         delay_timer -= 1;
     }
-
-    // increment instruction to execute
-    pc += 2;
+    
 }
 
 void Chip8::Table8(){
@@ -652,9 +653,9 @@ void Chip8::LD_B_Vx(){
     uint8_t value = V[x];
 
     // Example: 345
-    memory_map[I] = value % 10; // 5
+    memory_map[I+2] = value % 10; // 5
     value = value / 10; // 34.5 = 34 (truncated )
-    memory_map[I] = value % 10; // 4
+    memory_map[I+1] = value % 10; // 4
     value = value / 10;// 3.4 = 3
     memory_map[I] = value % 10; // 3
 }
@@ -666,9 +667,10 @@ void Chip8::LD_I_Vx(){
 
     uint8_t x = (opcode & 0x0F00u) >> 8u;
 
-    for(int i = 0; i < x; i++){
+    for(int i = 0; i <= x; i++){
         memory_map[I + i] = V[i];
     }
+    // I += x+1;
 }
 
 void Chip8::LD_Vx_I(){
@@ -678,9 +680,10 @@ void Chip8::LD_Vx_I(){
 
     uint8_t x = (opcode & 0x0F00u) >> 8u;
 
-    for(int i = 0; i < x; i++){
+    for(int i = 0; i <= x; ++i){
         V[i] = memory_map[I + i];
     }
+    // I += x+1;
 }
 
 uint16_t Chip8::getOpcode(){
@@ -705,4 +708,16 @@ uint8_t Chip8::getV(uint8_t Vindex){
 
 uint16_t Chip8::getPc(){
     return pc;
+}
+
+uint16_t Chip8::getI(){
+    return I;
+}
+
+uint8_t Chip8::getSp(){
+    return sp;
+}
+
+uint16_t Chip8::getStack(uint8_t Vindex){
+    return stack[Vindex];
 }
