@@ -25,12 +25,12 @@ class Chip8 {
         uint8_t memory_map[4096] = {}; 
 
         uint16_t getOpcode();
-        uint16_t getOpcodeFunctionPtr();
         uint8_t getV(uint8_t Vindex);
         uint16_t getPc();
         uint16_t getI();
         uint8_t getSp();
         uint16_t getStack(uint8_t Vindex);
+        uint8_t getKey(uint8_t Keyindex);
         
     private:
         // All instructions are 2 bytes long and are stored most-significant-byte first. 

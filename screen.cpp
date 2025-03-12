@@ -54,17 +54,6 @@ void Screen::drawDebugger(Chip8 chip8){
         uint16_t currentOpcode = memory[pc + i*2] << 8u | memory[pc+i*2+1]; // displays next instructions
         char opcodeBuffer[4] = {};
         sprintf(opcodeBuffer, "%04X", currentOpcode); // Hexadecimal ABCD
-        // std::cout << opcodeBuffer << std::endl;
-        // char opcodeBuffer1[2] = {};
-        // char opcodeBuffer2[2] = {};
-        
-        // sprintf(opcodeBuffer1, "%2X", memory[pc+i*2] & 0xF0); // Hexadecimal ABCD
-        // sprintf(opcodeBuffer2, "%2X", memory[pc+i*2+1]& 0x0F); // Hexadecimal ABCD
-        // std::string opcodeText = "";
-        // opcodeText += opcodeBuffer1;
-        // opcodeText += opcodeBuffer2;
-        // std::cout << opcodeBuffer1 << std::endl;
-        // std::cout << opcodeBuffer2 << std::endl;
 
         SDL_Surface* surfaceMessageOpcode = TTF_RenderText_Solid(font, opcodeBuffer, White);
         SDL_Texture* MessageOpcode = SDL_CreateTextureFromSurface((*this).renderer, surfaceMessageOpcode);
@@ -80,28 +69,7 @@ void Screen::drawDebugger(Chip8 chip8){
         SDL_FreeSurface(surfaceMessageOpcode);
         SDL_DestroyTexture(MessageOpcode);
     }
-
-    // uint16_t opcode = chip8.getOpcode();
-    // char opcodeText[4]; // 4 opcode chars
-    // sprintf(opcodeText, "%04X", opcode); // Hexadecimal ABCD
     
-
-    // SDL_Surface* surfaceMessage = TTF_RenderText_Solid(font, opcodeText, White);
-    // SDL_Texture* Message = SDL_CreateTextureFromSurface((*this).renderer, surfaceMessage);
-
-    // SDL_Rect Message_rect;
-    // Message_rect.x = xDisplay;
-    // Message_rect.y = 0;
-    // Message_rect.w = surfaceMessage->w;
-    // Message_rect.h = surfaceMessage->h;
-
-    // SDL_RenderCopy((*this).renderer, Message, NULL, &Message_rect);
-
-    // SDL_FreeSurface(surfaceMessage);
-    // SDL_DestroyTexture(Message);
-
-    
-
 
     // draw V registers
     SDL_SetRenderDrawColor((*this).renderer, 1, 0, 165, 0);
@@ -224,53 +192,32 @@ void Screen::drawDebugger(Chip8 chip8){
         SDL_DestroyTexture(MessageStack);
     }
 
-    // SDL_SetRenderDrawColor((*this).renderer, 1, 0, 165, 0);
-    // SDL_Rect fillRectRightBottom = {xDisplay, yDisplay, SCREEN_WIDTH - xDisplay, SCREEN_HEIGHT - yDisplay}; 
-    // SDL_RenderFillRect((*this).renderer, &fillRectRightBottom);
-
-
-    // std::string Vtext = "";
+    std::string Keypadtext = "";
     
-    // char Vvalue[8];
-    // for(int i=0; i < 16; i++){
-    //     Vtext = "V";
-    //     Vtext += std::to_string(i); 
-    //     if(i < 10){
-    //         Vtext += " ";
-    //     }
-    //     Vtext += ": ";
-    //     sprintf(Vvalue, "%02X", chip8.getV(i)); // Hexadecimal ABCD
-    //     Vtext += Vvalue;
-    //     // Vtext += "\n";
-    //     SDL_Surface* surfaceMessageVregs = TTF_RenderText_Solid(font, Vtext.c_str(), White);
-    //     SDL_Texture* MessageVregs = SDL_CreateTextureFromSurface((*this).renderer, surfaceMessageVregs);
+    char Keypadvalue[16];
+    for(int i=0; i < 16; i++){
+        Keypadtext = "K";
+        Keypadtext += std::to_string(i); 
+        if(i < 10){
+            Keypadtext += " ";
+        }
+        Keypadtext += ":";
+        sprintf(Keypadvalue, "%1X", chip8.getKey(i)); // Hexadecimal ABCD
+        Keypadtext += Keypadvalue;
+        // Vtext += "\n";
+        SDL_Surface* surfaceMessageKeypad = TTF_RenderText_Solid(font, Keypadtext.c_str(), White);
+        SDL_Texture* MessageKeypad = SDL_CreateTextureFromSurface((*this).renderer, surfaceMessageKeypad);
         
-    //     SDL_Rect Message_rectVregs;
-    //     Message_rectVregs.x = xDisplay;
-    //     Message_rectVregs.y = yDisplay + i*(SCREEN_HEIGHT-yDisplay)/16;
-    //     Message_rectVregs.w = surfaceMessageVregs->w;
-    //     Message_rectVregs.h = surfaceMessageVregs->h;
+        SDL_Rect Message_rectKeypad;
+        Message_rectKeypad.x = xDisplay + 3.2*(SCREEN_WIDTH-xDisplay)/4;
+        Message_rectKeypad.y = yDisplay + i*(SCREEN_HEIGHT-yDisplay)/16;
+        Message_rectKeypad.w = surfaceMessageKeypad->w;
+        Message_rectKeypad.h = surfaceMessageKeypad->h;
         
-    //     SDL_RenderCopy((*this).renderer, MessageVregs, NULL, &Message_rectVregs);
-    //     SDL_FreeSurface(surfaceMessageVregs);
-    //     SDL_DestroyTexture(MessageVregs);
-    // }
-
-
-    // Vtext.pop_back();
-    // std::cout << "--" << Vtext << "--" << std::endl;
-
-
-
-
-    // SDL_FreeSurface(surfaceMessageVregs);
-    // SDL_DestroyTexture(MessageVregs);
-    // std::cout << Vtext << std::endl;
-
-    // chip8.getOpcodeFunctionPtr();
-    // std::cout << ((chip8).*(table[(opcode & 0XF000u) >> 12u]))() << std::endl;
-
-    // SDL_RenderPresent((*this).renderer);
+        SDL_RenderCopy((*this).renderer, MessageKeypad, NULL, &Message_rectKeypad);
+        SDL_FreeSurface(surfaceMessageKeypad);
+        SDL_DestroyTexture(MessageKeypad);
+    }
 }
 
 
@@ -281,21 +228,20 @@ void Screen::draw(uint8_t display[]){
     for(int x=0; x < 64; x++){
         for(int y=0; y < 32; y++){
             SDL_SetRenderDrawColor((*this).renderer, display[y*64+x]*255, display[y*64+x]*255, display[y*64+x]*255, 0);
-            // std::cout << display[r*c] << std::endl;
-            // if(display[r*c] == 0x1u){
-            //     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 0);
-            // }else{
-            //     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+            /* Optimized Way */
+            SDL_Rect fillRect = {x*spriteW, y*spriteH, spriteW, spriteH}; 
+            SDL_RenderFillRect((*this).renderer, &fillRect);
+            
+            /* Non Optimized Way */
+            // for(int xoff=0; xoff < spriteW; xoff++){
+            //     for(int yoff=0; yoff < spriteH; yoff++){
+            //         SDL_RenderDrawPoint((*this).renderer,x*spriteW + xoff, y*spriteH + yoff);
+            //     }
             // }
-            // SDL_SetRenderDrawColor(renderer, 255, 255, 255, 0);
-            // SDL_RenderDrawPoint(renderer,x*spriteW, y*spriteH);
-            for(int xoff=0; xoff < spriteW; xoff++){
-                for(int yoff=0; yoff < spriteH; yoff++){
-                    SDL_RenderDrawPoint((*this).renderer,x*spriteW + xoff, y*spriteH + yoff);
-                }
-            }
         }
     }
 
-    // SDL_RenderPresent(renderer);
+    
+
+
 }

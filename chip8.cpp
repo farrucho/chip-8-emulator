@@ -506,23 +506,6 @@ void Chip8::DRW_Vx_Vy_nibble(){
             uint16_t pixelPostion = ((V[y]%32) +spriteRow)*64 + ((V[x]%64) + spriteCol);
             
             uint8_t* screenPixel = &display[pixelPostion];
-            
-            // std::cout << "----------------------------" << std::endl;
-            // for(int ki = 0; ki < 32; ki++){
-                //     for(int kj = 0; kj < 64; kj++){
-                    //         std::cout << unsigned(ki*64 + kj) << " ";
-                    //     }
-                    //     std::cout << "\n";
-                    // }
-                    // std::cout << "----------------------------" << std::endl;
-                    
-            // *screenPixel ^= spritepixel;
-                    
-            // std::cout << unsigned(spritepixel) << "  " << unsigned(pixelPostion) << "  " << unsigned(*screenPixel) << std::endl;
-            
-            // if(unsigned(pixelPostion) > 2048){
-            //     throw std::invalid_argument( "pixel positon too big" );
-            // }
 
 
             // SpritePixel ScreenPixel XOR
@@ -536,11 +519,9 @@ void Chip8::DRW_Vx_Vy_nibble(){
                     V[0xFu] = 1;
                 }
                 
-                // *screenPixel = ~(spritepixel);
             }
             *screenPixel ^= spritepixel;
         }
-        // std::cout << std::endl;
     } 
 }
 
@@ -590,7 +571,7 @@ void Chip8::LD_Vx_K(){
     
     uint8_t x = (opcode & 0x0F00u) >> 8u;
 
-    for(int i = 0; i < 15; i++){
+    for(int i = 0; i < 16; i++){
         if(keyboard[i]){
             V[x] = i;
             return;
@@ -684,18 +665,6 @@ uint16_t Chip8::getOpcode(){
     return (*this).opcode;
 }
 
-uint16_t Chip8::getOpcodeFunctionPtr(){
-    // ((*this).*(table[(opcode & 0XF000u) >> 12u]))();
-    // auto funcPtr =  table[(opcode & 0XF000u) >> 12u]();
-    // // printf("Function pointer address: %p\n", (void*)funcPtr);
-    // // std::cout << funcPtr << std::endl;
-    // // printf("%s", funcPtr);
-    // std::cout << opcode << std::endl;
-    // // std::cout << "Function pointer: " << (void*)funcPtr << std::endl;
-    // std::cout << "Function type info: " << typeid(funcPtr).name() << std::endl;
-    return 0;
-}
-
 uint8_t Chip8::getV(uint8_t Vindex){
     return V[Vindex];
 }
@@ -714,4 +683,7 @@ uint8_t Chip8::getSp(){
 
 uint16_t Chip8::getStack(uint8_t Vindex){
     return stack[Vindex];
+}
+uint8_t Chip8::getKey(uint8_t Keyindex){
+    return keyboard[Keyindex];
 }
