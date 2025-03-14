@@ -7,6 +7,8 @@
 int main(int argc, char* args[])
 {
     Chip8 chip8;
+    int INSTRUC_PER_SECOND = 60; // 60 Hz
+
     // const char* ROM_FILENAME = "ibm_logo_testrom.ch8"; // PASSED
     // const char* ROM_FILENAME = "chip8-logo_test_rom.ch8"; // PASSED
     // const char* ROM_FILENAME = "corax_test_rom.ch8"; // PASSED
@@ -25,7 +27,11 @@ int main(int argc, char* args[])
     screen.initialize();
 
     
-    
+    // int cycles=0;
+    // while(cycles < 2100){
+    //     chip8.Cycle();
+    //     cycles++;
+    // }
     bool quit = false;
     auto lastCycleTime = std::chrono::steady_clock::now();
     
@@ -168,10 +174,11 @@ int main(int argc, char* args[])
             }
         }
         
-        if(difference > 1){
+        if(difference > 1000*1/INSTRUC_PER_SECOND){
             chip8.Cycle();
             screen.draw(chip8.display);
             screen.drawDebugger(chip8);
+            screen.drawKeyboard(chip8);
             screen.render();
             lastCycleTime = std::chrono::steady_clock::now();
         }

@@ -20,6 +20,7 @@ class Screen {
     void initialize();
     void draw(uint8_t display[]);
     void drawDebugger(Chip8 chip8);
+    void drawKeyboard(Chip8 chip8);    
     void render();
             
 };

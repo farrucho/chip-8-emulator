@@ -125,7 +125,7 @@ void Chip8::Cycle(){
     
     // The sound timer is active whenever the sound timer register (ST) is non-zero. This timer also decrements at a rate of 60Hz, however, as long as ST's value is greater than zero, the Chip-8 buzzer will sound. When ST reaches zero, the sound timer deactivates.
     if(sound_timer > 0){
-        delay_timer -= 1;
+        sound_timer -= 1;
     }
     
 }
@@ -684,6 +684,15 @@ uint8_t Chip8::getSp(){
 uint16_t Chip8::getStack(uint8_t Vindex){
     return stack[Vindex];
 }
+
 uint8_t Chip8::getKey(uint8_t Keyindex){
     return keyboard[Keyindex];
+}
+
+uint8_t Chip8::getDelay(){
+    return delay_timer;
+}
+
+uint8_t Chip8::getSound(){
+    return sound_timer;
 }

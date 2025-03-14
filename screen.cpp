@@ -163,6 +163,28 @@ void Screen::drawDebugger(Chip8 chip8){
     SDL_FreeSurface(surfaceMessageSP);
     SDL_DestroyTexture(MessageSP);
 
+
+    // draw delay timer
+    std::string DelayTimertext = "";
+    DelayTimertext += "ST:";
+    char DelayTimervalue[8];
+    sprintf(DelayTimervalue, "%02X", chip8.getDelay()); // Hexadecimal ABCD
+    DelayTimertext += DelayTimervalue;
+    SDL_Surface* surfaceMessageDelayTimer = TTF_RenderText_Solid(font, DelayTimertext.c_str(), White);
+    SDL_Texture* MessageDelayTimer = SDL_CreateTextureFromSurface((*this).renderer, surfaceMessageDelayTimer);
+
+        
+    SDL_Rect Message_rectDelayTimer;
+    Message_rectDelayTimer.x = xDisplay + 1*(SCREEN_WIDTH-xDisplay)/4;
+    Message_rectDelayTimer.y = yDisplay + 6*(SCREEN_HEIGHT-yDisplay)/16;
+    Message_rectDelayTimer.w = surfaceMessageDelayTimer->w;
+    Message_rectDelayTimer.h = surfaceMessageDelayTimer->h;
+        
+    SDL_RenderCopy((*this).renderer, MessageDelayTimer, NULL, &Message_rectDelayTimer);
+    SDL_FreeSurface(surfaceMessageDelayTimer);
+    SDL_DestroyTexture(MessageDelayTimer);
+
+    
     
     // draw stack
     std::string Stacktext = "";
@@ -240,8 +262,57 @@ void Screen::draw(uint8_t display[]){
             // }
         }
     }
+}
 
+
+void Screen::drawKeyboard(Chip8 chip8){
+    int spriteW = 0.5*SCREEN_WIDTH/64;
+    int spriteH = 0.5*SCREEN_HEIGHT/32;
+    int xDisplay = 0.5*SCREEN_WIDTH;
+    int yDisplay = 0.5*SCREEN_HEIGHT;
     
+    TTF_Font* font = TTF_OpenFont("./PressStart2P-Regular.ttf", spriteW);
+    // SDL_Color White = {123, 125, 201};
 
+    // std::string SPtext = "";
+    // SPtext += "SP:";
+    // char SPvalue[8];
+    // sprintf(SPvalue, "%02X", chip8.getSp()); // Hexadecimal ABCD
+    // SPtext += SPvalue;
+    const char keys[16] = {'1','2','3','C',
+                            '4','5','6','D',
+                            '7','8','9','E',
+                            'A','0','B','F'};
 
+                            
+    for(int i = 0; i < 4; i++){
+        for(int j = 0; j < 4; j++){
+            char text[2] = {keys[i + j*4],'\0'};
+
+            int hexValue;
+            if (keys[i + j * 4] >= '0' && keys[i + j * 4] <= '9') {
+                hexValue = keys[i + j * 4] - '0';   
+            } else {
+                hexValue = keys[i + j * 4] - 'A' + 10;
+            }
+
+            int keyPressed = chip8.getKey(hexValue);
+            SDL_Color White = {255 - keyPressed*(255-123), 255 - keyPressed*(255-125), 255 - keyPressed*(255-201)};
+
+            SDL_Surface* surfaceMessageSP = TTF_RenderText_Solid(font, text, White);
+            SDL_Texture* MessageSP = SDL_CreateTextureFromSurface((*this).renderer, surfaceMessageSP);
+                
+            SDL_Rect Message_rectSP;
+            Message_rectSP.x = i*(SCREEN_WIDTH-xDisplay)/12 + (SCREEN_WIDTH-xDisplay)/3;
+            Message_rectSP.y = j*(SCREEN_HEIGHT-yDisplay)/5 + (SCREEN_HEIGHT-yDisplay)/5 + yDisplay;
+            // Message_rectSP.w = surfaceMessageSP->w;
+            // Message_rectSP.h = surfaceMessageSP->h;
+            Message_rectSP.w = (SCREEN_WIDTH-xDisplay)/12;
+            Message_rectSP.h = (SCREEN_HEIGHT-yDisplay)/12;
+                
+            SDL_RenderCopy((*this).renderer, MessageSP, NULL, &Message_rectSP);
+            SDL_FreeSurface(surfaceMessageSP);
+            SDL_DestroyTexture(MessageSP);
+        }
+    }
 }
