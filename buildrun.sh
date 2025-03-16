@@ -1,5 +1,5 @@
 #!/bin/bash
 
-rm ./a.out
-g++ *.cpp -lSDL2 -lSDL2_ttf
-./a.out
+rm ./chip8
+g++ *.cpp -lSDL2 -lSDL2_ttf -o chip8
+./chip8
