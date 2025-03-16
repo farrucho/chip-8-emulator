@@ -6,7 +6,9 @@ running and debugging any given ROM file. This project passes with success chip8
 
 ## Gallery
 
+![tetris](https://github.com/user-attachments/assets/1b3110ff-c0a1-44fb-a920-ec25f59ff535)
 
+![pong](https://github.com/user-attachments/assets/cee4babc-06bd-4a0d-a4cb-73c92d719798)
 
 ## KeyBoard Input
 
