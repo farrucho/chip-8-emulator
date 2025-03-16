@@ -15,7 +15,7 @@ int main(int argc, char* args[])
     // const char* ROM_FILENAME = "flags_test_rom.ch8"; // PASSED
     // const char* ROM_FILENAME = "keypad_test_rom.ch8"; // PASSED
     const char* ROM_FILENAME = "tetris.ch8"; // Works
-    // const char* ROM_FILENAME = "astro_dodge.ch8"; // Works
+    // const char* ROM_FILENAME = "spaceinvaders.ch8"; // Works
     // const char* ROM_FILENAME = "pong_1player.ch8"; // Works
 
 
@@ -27,11 +27,6 @@ int main(int argc, char* args[])
     screen.initialize();
 
     
-    // int cycles=0;
-    // while(cycles < 2100){
-    //     chip8.Cycle();
-    //     cycles++;
-    // }
     bool quit = false;
     auto lastCycleTime = std::chrono::steady_clock::now();
     
